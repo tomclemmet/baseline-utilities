@@ -1,5 +1,5 @@
 # Baseline Utilities
-Code repository for my dissertation MSc Health Economics dissertation entitled "Validating Methods for Estimating Age and Sex Adjusted Baseline Utilities".
+Code repository for the study "Validating Methods for Estimating Age and Sex Adjusted Baseline Utilities".
 ## Abstract
 Age- and sex-adjusted HSUV baselines are sometimes required for HTA submissions, especially since NICE’s 2022 introduction of absolute/proportional QALY shortfalls to determine severity modifiers. Research on estimating these baselines has been sparse and has not considered a broad range of models. I implement a stratified k-fold cross-validation procedure to test the performance of a selection of baseline utility models: an ALDVMM, a range of polynomial models and a range of RCS models. My results fail to support the DSU’s recommendation of the ALDVMM. Polynomial models are useful but higher-order versions produce counterintuitive predictions for older people. RCS models avoid this problem, with the optimal number of knots (i.e. model flexibility) being around 7. However, the differences in models’ baselines seem unlikely to be decisive in economic evaluations, and there are significant difficulties in estimating HSUVs for older people which further research ought to thoroughly investigate.
  
