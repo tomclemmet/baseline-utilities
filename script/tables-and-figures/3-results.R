@@ -29,7 +29,9 @@ errs <- read_csv("output/3-results/kfold-results.csv", show_col_types = FALSE) |
       .default = "Other"
     ), levels = c("Linear", "ALDVMM", "Polynomial", "RCS", "Other"))
   ) |> 
-  filter(! if_any(everything(), is.na))
+  group_by(Age, Fold) |> # New code to filter out data if one of the models in that fold can't predict it (complete case analysis)
+  filter(!any(is.na(Predicted))) |> 
+  ungroup()
 
 # Appendix B1: Overall Error Statistics ---------------------------------------
 etab.ovr <- errs |> 
