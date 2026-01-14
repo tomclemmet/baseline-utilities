@@ -8,3 +8,4 @@
 
 .Rproj.user/*
 !session-info.txt
+.Rproj.user
