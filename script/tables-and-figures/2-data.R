@@ -4,7 +4,10 @@
 # section
 
 # Loading packages and data ---------------------------------------------------
-pacman::p_load(dplyr, tidyr, readr, ggplot2)
+library(dplyr)
+library(tidyr)
+library(readr)
+library(ggplot2)
 theme_set(theme_bw())
 
 hse <- read_csv("data/hse.csv", show_col_types = FALSE)

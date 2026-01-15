@@ -3,8 +3,6 @@
 
 rm(list = ls())
 
-if (! require("pacman")) install.packages("pacman")
-
 files <- c(
   "script/tables-and-figures/1-literature.R",
   "script/load-hse.R",

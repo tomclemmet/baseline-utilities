@@ -8,15 +8,15 @@
 # Note that this file may take some time to run due to the complexity of 
 # fitting the ALDVMM model.
 
-# Installing version of the aldvmm package used in the original analysis and dependencies
-remotes::install_version("Rvmmin", version = "2018-4.17.1")
-remotes::install_version("Rcgmin", version = "2022-4.30")
-remotes::install_version("optimr", version = "2019-12.16")
-remotes::install_version("aldvmm", version = "0.8.7")
+# Loading packages/data and other setup  --------------------------------------
+library(dplyr)
+library(tidyr)
+library(readr)
+library(ggplot2)
+library(rsample)
+library(rms)
 library(aldvmm)
 
-# Loading packages/data and other setup  --------------------------------------
-pacman::p_load(dplyr, tidyr, readr, ggplot2, rsample, rms)
 
 hse <- read_csv("Data/hse.csv", show_col_types = FALSE)
 

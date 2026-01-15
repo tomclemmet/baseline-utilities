@@ -9,3 +9,9 @@
 .Rproj.user/*
 !session-info.txt
 .Rproj.user
+
+renv/library/
+renv/python/
+renv/staging/
+renv/local/
+renv/lock/

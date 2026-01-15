@@ -3,7 +3,12 @@
 # Figures 7-13 and appendices B1-C1, contained in the results section
 
 # Loading packages/data and other setup ---------------------------------------
-pacman::p_load(dplyr, tidyr, readr, ggplot2, rms, ggpubr)
+library(dplyr)
+library(tidyr)
+library(readr)
+library(ggplot2)
+library(rms)
+library(ggpubr)
 theme_set(theme_bw())
 
 exclude <- c("Ones", "Mean", "Poly-6", "Poly-7", 
