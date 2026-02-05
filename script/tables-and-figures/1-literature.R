@@ -3,7 +3,10 @@
 # Code for figures 1 and 2, contained in the literature review
 
 # Loading packages and data ---------------------------------------------------
-pacman::p_load(dplyr, tidyr, readr, ggplot2)
+library(dplyr)
+library(tidyr)
+library(readr)
+library(ggplot2)
 theme_set(theme_bw())
 
 nonpara_baselines <- read_csv("data/npara-baselines.csv", show_col_types = FALSE) 

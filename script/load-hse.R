@@ -4,7 +4,10 @@
 # relevant variables, joins the datasets together, and adds the TTO scores.
 
 # Loading packages ------------------------------------------------------------
-pacman::p_load(readr, dplyr, tidyr, eq5d)
+library(readr)
+library(dplyr)
+library(tidyr)
+library(eq5d)
 
 # Loading each HSE round, cleaning and combining ------------------------------
 

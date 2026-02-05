@@ -3,7 +3,12 @@
 # Figures 7-13 and appendices B1-C1, contained in the results section
 
 # Loading packages/data and other setup ---------------------------------------
-pacman::p_load(dplyr, tidyr, readr, ggplot2, rms, ggpubr)
+library(dplyr)
+library(tidyr)
+library(readr)
+library(ggplot2)
+library(rms)
+library(ggpubr)
 theme_set(theme_bw())
 
 exclude <- c("Ones", "Mean", "Poly-6", "Poly-7", 
@@ -29,6 +34,7 @@ errs <- read_csv("output/3-results/kfold-results.csv", show_col_types = FALSE) |
       .default = "Other"
     ), levels = c("Linear", "ALDVMM", "Polynomial", "RCS", "Other"))
   ) |> 
+   #filter(! if_any(everything(), is.na))
   group_by(Age, Fold) |> # New code to filter out data if one of the models in that fold can't predict it (complete case analysis)
   filter(!any(is.na(Predicted))) |> 
   ungroup()

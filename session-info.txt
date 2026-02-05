@@ -1,42 +1,34 @@
-R version 4.3.1 (2023-06-16 ucrt)
-Platform: x86_64-w64-mingw32/x64 (64-bit)
-Running under: Windows 11 x64 (build 22621)
+R version 4.5.2 (2025-10-31 ucrt)
+Platform: x86_64-w64-mingw32/x64
+Running under: Windows 11 x64 (build 26100)
 
 Matrix products: default
-
+  LAPACK version 3.12.1
 
 locale:
-[1] LC_COLLATE=English_United Kingdom.utf8  LC_CTYPE=English_United Kingdom.utf8   
-[3] LC_MONETARY=English_United Kingdom.utf8 LC_NUMERIC=C                           
+[1] LC_COLLATE=English_United Kingdom.utf8  LC_CTYPE=English_United Kingdom.utf8    LC_MONETARY=English_United Kingdom.utf8 LC_NUMERIC=C                           
 [5] LC_TIME=English_United Kingdom.utf8    
 
 time zone: Europe/London
 tzcode source: internal
 
 attached base packages:
-[1] stats     graphics  grDevices utils     datasets  methods   base     
+[1] stats     graphics  grDevices datasets  utils     methods   base     
 
 other attached packages:
- [1] forcats_1.0.0   rsample_1.1.1   eq5d_0.14.0     stargazer_5.2.3 rms_6.7-0       Hmisc_5.1-0    
- [7] aldvmm_0.8.7    tidyr_1.3.0     readr_2.1.4     dplyr_1.1.2     pacman_0.5.1    ggplot2_3.4.2  
+ [1] ggpubr_0.6.2    eq5d_0.16.1     rlang_1.1.6     lifecycle_1.0.4 aldvmm_0.8.7    rms_8.1-0       Hmisc_5.2-4     rsample_1.3.1   ggplot2_4.0.1   readr_2.1.6    
+[11] tidyr_1.3.2     dplyr_1.1.4    
 
 loaded via a namespace (and not attached):
- [1] gtable_0.3.3        xfun_0.39           htmlwidgets_1.6.2   lattice_0.21-8     
- [5] tzdb_0.4.0          numDeriv_2016.8-1.1 vctrs_0.6.3         tools_4.3.1        
- [9] generics_0.1.3      parallel_4.3.1      sandwich_3.0-2      tibble_3.2.1       
-[13] fansi_1.0.4         cluster_2.1.4       optimr_2019-12.16   pkgconfig_2.0.3    
-[17] Matrix_1.5-4.1      data.table_1.14.8   checkmate_2.2.0     lifecycle_1.0.3    
-[21] compiler_4.3.1      stringr_1.5.0       MatrixModels_0.5-1  munsell_0.5.0      
-[25] codetools_0.2-19    setRNG_2022.4-1     SparseM_1.81        quantreg_5.95      
-[29] htmltools_0.5.5     htmlTable_2.4.1     Formula_1.2-5       furrr_0.3.1        
-[33] pillar_1.9.0        MASS_7.3-60         Rcgmin_2022-4.30    multcomp_1.4-25    
-[37] rpart_4.1.19        parallelly_1.36.0   nlme_3.1-162        tidyselect_1.2.0   
-[41] digest_0.6.32       future_1.33.0       mvtnorm_1.2-2       polspline_1.1.23   
-[45] stringi_1.7.12      listenv_0.9.0       purrr_1.0.1         splines_4.3.1      
-[49] fastmap_1.1.1       grid_4.3.1          colorspace_2.1-0    cli_3.6.1          
-[53] magrittr_2.0.3      base64enc_0.1-3     survival_3.5-5      utf8_1.2.3         
-[57] TH.data_1.1-2       foreign_0.8-84      withr_2.5.0         scales_1.2.1       
-[61] backports_1.4.1     rmarkdown_2.23      globals_0.16.2      nnet_7.3-19        
-[65] gridExtra_2.3       zoo_1.8-12          hms_1.1.3           evaluate_0.21      
-[69] knitr_1.43          Rvmmin_2018-4.17.1  lmtest_0.9-40       optextras_2019-12.4
-[73] rlang_1.1.1         glue_1.6.2          rstudioapi_0.14     R6_2.5.1           
+ [1] tidyselect_1.2.1    viridisLite_0.4.2   Rvmmin_2018-4.17.1  farver_2.1.2        S7_0.2.1            fastmap_1.2.0       TH.data_1.1-5       digest_0.6.39      
+ [9] rpart_4.1.24        cluster_2.1.8.1     survival_3.8-3      magrittr_2.0.4      compiler_4.5.2      setRNG_2024.2-1     tools_4.5.2         data.table_1.18.0  
+[17] ggsignif_0.6.4      knitr_1.51          labeling_0.4.3      htmlwidgets_1.6.4   bit_4.6.0           RColorBrewer_1.1-3  abind_1.4-8         multcomp_1.4-29    
+[25] polspline_1.1.25    withr_3.0.2         foreign_0.8-90      purrr_1.2.0         Rcgmin_2022-4.30    numDeriv_2016.8-1.1 optextras_2019-12.4 nnet_7.3-20        
+[33] grid_4.5.2          colorspace_2.1-2    future_1.68.0       globals_0.18.0      scales_1.4.0        MASS_7.3-65         cli_3.6.5           mvtnorm_1.3-3      
+[41] crayon_1.5.3        rmarkdown_2.30      generics_0.1.4      remotes_2.5.0       rstudioapi_0.17.1   tzdb_0.5.0          stringr_1.6.0       splines_4.5.2      
+[49] parallel_4.5.2      base64enc_0.1-3     vctrs_0.6.5         Matrix_1.7-4        sandwich_3.1-1      carData_3.0-5       SparseM_1.84-2      car_3.1-3          
+[57] optimr_2019-12.16   hms_1.1.4           bit64_4.6.0-1       rstatix_0.7.3       Formula_1.2-5       htmlTable_2.4.3     listenv_0.10.0      glue_1.8.0         
+[65] parallelly_1.46.0   codetools_0.2-20    cowplot_1.2.0       stringi_1.8.7       gtable_0.3.6        lmtest_0.9-40       tibble_3.3.0        furrr_0.3.1        
+[73] pillar_1.11.1       htmltools_0.5.9     quantreg_6.1        R6_2.6.1            vroom_1.6.6         evaluate_1.0.5      lattice_0.22-7      backports_1.5.0    
+[81] broom_1.0.11        renv_1.1.5          MatrixModels_0.5-4  gridExtra_2.3       nlme_3.1-168        checkmate_2.3.3     xfun_0.53           zoo_1.8-15         
+[89] pkgconfig_2.0.3    

@@ -9,7 +9,14 @@
 # fitting the ALDVMM model.
 
 # Loading packages/data and other setup  --------------------------------------
-pacman::p_load(dplyr, tidyr, readr, ggplot2, rsample, rms, aldvmm)
+library(dplyr)
+library(tidyr)
+library(readr)
+library(ggplot2)
+library(rsample)
+library(rms)
+library(aldvmm)
+
 
 hse <- read_csv("Data/hse.csv", show_col_types = FALSE)
 
