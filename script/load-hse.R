@@ -48,3 +48,23 @@ hse$Index <- eq5d::eq5d(
 )
 
 write_csv(hse, "data/hse.csv")
+
+hse |> 
+  mutate(age_group = case_when(
+    Age <= 24 ~ "16-24",
+    Age <= 34 ~ "25-34",
+    Age <= 44 ~ "35-44",
+    Age <= 54 ~ "45-54",
+    Age <= 64 ~ "55-64",
+    Age <= 74 ~ "65-74",
+    Age <= 84 ~ "75-84",
+    .default = "85+"
+  )) |> 
+  count(age_group)
+
+hse |> 
+  summarise(
+    mean_age = mean(Age),
+    sd_age = sd(Age),
+    n_male = sum(Sex == "Male")
+  )
