@@ -4,7 +4,6 @@
 # relevant variables, joins the datasets together, and adds the TTO scores.
 
 # Loading packages ------------------------------------------------------------
-rm(list = ls())
 library(readr)
 library(dplyr)
 library(tidyr)
@@ -14,12 +13,11 @@ library(eq5d)
 
 hse <- bind_rows(
   `2017` = read_tsv("raw-data/hse17i_eul_v3.tab", name_repair = tolower),
-  `2018` = read_tsv("raw-data/hse_2018_eul_15082022.tab", , name_repair = tolower),
-  .id = "year"
+  `2018` = read_tsv("raw-data/hse_2018_eul_15082022.tab", , name_repair = tolower)
 ) |> 
   select(year, age16g5, mobil17, selfca17, usuala17, pain17, anxiet17, sex) |> 
   rename(MO = mobil17, SC = selfca17, UA = usuala17, PD = pain17, AD = anxiet17) |> 
-  filter(! if_any(everything(), ~. %in% c(-9, -8, -1))) |> 
+  filter(! if_any(c(MO, SC, UA, PD, AD, sex, age16g5), ~. %in% c(-9, -8, -1))) |> 
   mutate(age = recode_values(
       age16g5,
       1 ~ mean(c(16, 17)),
