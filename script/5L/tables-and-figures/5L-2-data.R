@@ -104,3 +104,26 @@ hse |>
     name="",
     labels=c("No Problems", "Some Problems", "Extreme Problems"),
   )
+
+# Summary table
+hse |> 
+  summarise(
+    n = n(),
+    y17 = sum(hseyr == 2017),
+    y18 = sum(hseyr == 2018),
+    male = sum(sex == "Male"),
+    mean_age = mean(age),
+    sd_age = sd(age),
+    a16_24 = sum(age >= 16 & age <= 24),
+    a25_34 = sum(age >= 25 & age <= 34),
+    a35_44 = sum(age >= 35 & age <= 44),
+    a45_54 = sum(age >= 45 & age <= 54),
+    a55_64 = sum(age >= 55 & age <= 64),
+    a65_74 = sum(age >= 65 & age <= 74),
+    a75_84 = sum(age >= 75 & age <= 84),
+    a85plus = sum(age >= 85),
+    utility = mean(index),
+    utility_sd = sd(index)
+  ) |> 
+  pivot_longer(everything(), names_to = "variable", values_to = "value") 
+  write.csv("output-5L/2-data/characeristics.csv")
