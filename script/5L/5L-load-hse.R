@@ -7,17 +7,15 @@
 library(readr)
 library(dplyr)
 library(tidyr)
-library(eq5d)
-
+source("script/5L/eq5d5l.R")
 # Loading 2017 and 2018 HSE ----------------------------------------------------
 
 hse <- bind_rows(
   `2017` = read_tsv("raw-data/hse17i_eul_v3.tab", name_repair = tolower),
-  `2018` = read_tsv("raw-data/hse_2018_eul_15082022.tab", , name_repair = tolower)
+  `2018` = read_tsv("raw-data/hse_2018_eul_15082022.tab", name_repair = tolower)
 ) |> 
-  select(year, age16g5, mobil17, selfca17, usuala17, pain17, anxiet17, sex) |> 
-  rename(MO = mobil17, SC = selfca17, UA = usuala17, PD = pain17, AD = anxiet17) |> 
-  filter(! if_any(c(MO, SC, UA, PD, AD, sex, age16g5), ~. %in% c(-9, -8, -1))) |> 
+  select(hseyr, age16g5, mobil17, selfca17, usuala17, pain17, anxiet17, sex) |> 
+  filter(! if_any(c(mobil17, selfca17, usuala17, pain17, anxiet17, sex, age16g5), ~. %in% c(-9, -8, -1))) |> 
   mutate(age = recode_values(
       age16g5,
       1 ~ mean(c(16, 17)),
@@ -38,14 +36,8 @@ hse <- bind_rows(
       16 ~ mean(c(85, 89)),
       17 ~ 92.5 # Following approach of Hernandez Alava et al. (2022), using the average age for over 90s in the 2013 HSE
   ),
-  sex = recode_values(sex, 1 ~ "Male", 2 ~ "Female"))
-
-# Adding HSUVs using the UK's Dolan (1997) value set and saving --------------
-hse$index <- eq5d(
-  scores = hse[,3:7],
-  version = "5L",
-  country = "England",
-  type = "VT" # Think this gives the Devlin value set, should change to new value set when released
+  sex = recode_values(sex, 1 ~ "Male", 2 ~ "Female"),
+  index = eq5d5l(mobil17, selfca17, usuala17, pain17, anxiet17)
 )
 
 write_csv(hse, "data/hse-5L.csv")

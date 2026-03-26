@@ -53,7 +53,7 @@ hse |>
   coord_cartesian(xlim = c(16, 100), ylim = c(0.5, 1)) +
   theme(panel.grid.minor = element_blank()) +
   labs(
-    caption = "Source: Pooled HSE Data 2003-2014"
+    caption = "Source: Pooled HSE Data 2017-2018"
   ) +
   guides(colour = "none")
 ggsave("output-5L/2-data/fig-05--means.png", height = 4, width = 7)
@@ -87,9 +87,9 @@ ggsave("output-5L/2-data/fig-06--variation.png", height = 5, width = 7)
 
 # (Unused) age plots for individual dimensions --------------------------------
 hse |> 
-  mutate(across(MO:AD, as.factor), 
+  mutate(across(mobil17:anxiet17, as.factor), 
          age = case_match(age, 92.5 ~ 93, .default = age)) |> 
-  pivot_longer(MO:AD, names_to = "Dimension", values_to = "Score") |> 
+  pivot_longer(mobil17:anxiet17, names_to = "Dimension", values_to = "Score") |> 
   group_by(age, sex, Dimension) |> filter(n() >= 50) |> 
   
   ggplot(aes(x = age)) +
