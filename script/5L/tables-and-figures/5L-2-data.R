@@ -71,7 +71,7 @@ ggplot(hse) +
   labs(
     caption = "Source: Pooled HSE Data 2017-2018"
   ) 
-ggsave("output-5L/2-data/fig-05--means.png", height = 4, width = 7)
+ggsave("output-5L/2-data/fig-04a--boxplots.png", height = 4, width = 7)
 
 # Figure 6: Std Devs by age Decile --------------------------------------------
 hse |> 
@@ -102,23 +102,24 @@ ggsave("output-5L/2-data/fig-06--variation.png", height = 5, width = 7)
 
 # (Unused) age plots for individual dimensions --------------------------------
 hse |> 
-  mutate(across(mobil17:anxiet17, as.factor), 
-         age = case_match(age, 92.5 ~ 93, .default = age)) |> 
+  mutate(across(mobil17:anxiet17, as.factor)) |> 
   pivot_longer(mobil17:anxiet17, names_to = "Dimension", values_to = "Score") |> 
-  group_by(age, sex, Dimension) |> filter(n() >= 50) |> 
   
-  ggplot(aes(x = age)) +
+  ggplot(aes(x = age16g5)) +
   facet_grid(rows = vars(Dimension), cols = vars(sex)) +
   
   geom_bar(aes(fill = Score), position = position_fill(reverse = TRUE)) +
   
   theme(legend.position="bottom",
-        panel.grid=element_blank()) +
-  scale_y_continuous(breaks=c(0, 0.5, 1)) +
-  scale_fill_discrete(
-    name="",
-    labels=c("No Problems", "Some Problems", "Extreme Problems"),
-  )
+        panel.grid=element_blank(),
+        axis.text.x = element_text(angle = 270, vjust = 0.5, hjust = 0.1)) +
+  scale_y_continuous(labels = scales::percent_format(), breaks = c(0, 0.5, 1)) +
+  scale_fill_viridis_d(
+    option = "inferno", begin = 0.3, end = 0.9,
+    labels=c("No Problems", "Mild Problems", "Some Problems", "Moderate Problems", "Extreme Problems")
+  ) +
+  labs(x = "Age band", y = "Proportion")
+ggsave("output-5L/2-data/fig-07--dimensions.png", height = 8, width = 5)
 
 # Summary table
 hse |> 
