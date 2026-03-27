@@ -11,12 +11,12 @@ library(rms)
 library(ggpubr)
 theme_set(theme_bw())
 
-exclude <- c("Ones", "Mean", "ALDVMM")
+exclude <- c("Ones", "Mean")
 capt <- "Source: HSE 2017-18, 10-fold cross-validation"
 lw <- 0.25
 al <- 0.5
 mod.ord <- c(
-  "Ones",  "Mean", "Linear", "ALDVMM", "Quadratic", "Poly-3", "Poly-4", 
+  "Ones",  "Mean", "Linear", "ALDVMM1", "ALDVMM2", "Quadratic", "Poly-3", "Poly-4", 
   "Poly-5", "Poly-6", "Poly-7", "Poly-8",  "Poly-9", "Poly-10", "Poly-11", 
   "Poly-12", "RCS-3", "RCS-4", "RCS-5", "RCS-6", "RCS-7", "RCS-8", "RCS-9", 
   "RCS-10", "RCS-11", "RCS-12"
@@ -28,7 +28,7 @@ errs <- read_csv("output-5L/3-results/kfold-results.csv", show_col_types = FALSE
     Type = factor(case_when(
       substr(Model, 1, 4) %in% c("Poly", "Quad") ~ "Polynomial",
       substr(Model, 1, 4) == "RCS-" ~ "RCS",
-      Model == "ALDVMM" ~ "ALDVMM",
+      Model  %in% c("ALDVMM1, ALDVMM2") ~ "ALDVMM",
       Model == "Linear" ~ "Linear",
       .default = "Other"
     ), levels = c("Linear", "ALDVMM", "Polynomial", "RCS", "Other"))
@@ -131,7 +131,7 @@ etab.ovr |>
     panel.grid= element_blank(),
     strip.text = element_blank()
   ) +
-  coord_cartesian(ylim = c(0.1915, 0.192))
+  coord_cartesian(ylim = c(0.21175, 0.21225))
 
 ggsave("output-5L/3-results/fig-08--rmse.png", height = 4, width = 7)
 

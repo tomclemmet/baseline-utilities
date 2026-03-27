@@ -21,7 +21,7 @@ library(aldvmm)
 hse <- read_csv("Data/hse-5L.csv", show_col_types = FALSE)
 
 theme_set(theme_bw())
-set.seed(84848484)
+set.seed(64813465)
 aldvmm.coefs <- c(
   1, -0.01, -0.001, 1, -0.01, -0.001, 1, -0.01, -0.001,
   0, 0, 0, 0, -2, -2, -2
@@ -41,8 +41,10 @@ models <- list(
   `Poly-8` = \(x) lm(index ~ poly(age, 8, raw = TRUE), data = x),
   `Poly-9` = \(x) lm(index ~ poly(age, 9, raw = TRUE), data = x),
   `Poly-10` = \(x) lm(index ~ poly(age, 10, raw = TRUE), data = x),
-  # ALDVMM = \(x) aldvmm(index ~ I(age/10) + I((age/10)^2) | I(age/10), data = x,
-  #                      psi = c(1, -0.567), ncmp = 3),
+  ALDVMM1 = \(x) aldvmm(index ~ I(age/10) + I((age/10)^2) | I(age/10), data = x,
+                       psi = c(0.968, -0.567), ncmp = 1),
+  ALDVMM2 = \(x) aldvmm(index ~ I(age/10) + I((age/10)^2) | I(age/10), data = x,
+                       psi = c(0.968, -0.567), ncmp = 2),
   `RCS-3` = \(x) lm(index ~ rcs(age, 3), data = x),
   `RCS-4` = \(x) lm(index ~ rcs(age, 4), data = x),
   `RCS-5` = \(x) lm(index ~ rcs(age, 5), data = x),
@@ -80,7 +82,7 @@ for (s in c("Male", "Female")) {
         
         model <- models[[label]](train)
         
-        if (label == "ALDVMM") {
+        if (label == "ALDVMM1" | label == "ALDVMM2") {
           message(paste("\nALDVMM fitted, AIC =", model$gof$aic))
           train$Predicted <- model$pred$yhat
         } else if (label == "Ones") {
