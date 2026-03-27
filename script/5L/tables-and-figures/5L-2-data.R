@@ -122,11 +122,10 @@ hse |>
 ggsave("output-5L/2-data/fig-07--dimensions.png", height = 8, width = 5)
 
 # Summary table
-hse |> 
+by_yr <- hse |> 
+  group_by(hseyr) |> 
   summarise(
     n = n(),
-    y17 = sum(hseyr == 2017),
-    y18 = sum(hseyr == 2018),
     male = sum(sex == "Male"),
     mean_age = mean(age),
     sd_age = sd(age),
@@ -140,6 +139,23 @@ hse |>
     a85plus = sum(age >= 85),
     utility = mean(index),
     utility_sd = sd(index)
-  ) |> 
-  pivot_longer(everything(), names_to = "variable", values_to = "value") 
-  write.csv("output-5L/2-data/characeristics.csv")
+  )
+tot <- hse |> 
+  summarise(
+    n = n(),
+    male = sum(sex == "Male"),
+    mean_age = mean(age),
+    sd_age = sd(age),
+    a16_24 = sum(age >= 16 & age <= 24),
+    a25_34 = sum(age >= 25 & age <= 34),
+    a35_44 = sum(age >= 35 & age <= 44),
+    a45_54 = sum(age >= 45 & age <= 54),
+    a55_64 = sum(age >= 55 & age <= 64),
+    a65_74 = sum(age >= 65 & age <= 74),
+    a75_84 = sum(age >= 75 & age <= 84),
+    a85plus = sum(age >= 85),
+    utility = mean(index),
+    utility_sd = sd(index)
+  )
+
+write.csv(bind_rows(tot, by_yr), "output-5L/2-data/characeristics.csv")
