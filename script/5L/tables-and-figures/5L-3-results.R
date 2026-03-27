@@ -107,7 +107,7 @@ errs |>
   labs(y = "Predicted utility") +
 
   theme(panel.grid.minor = element_blank(), legend.position = "bottom") +
-  coord_cartesian(ylim = c(0.4, 1)) +
+  coord_cartesian(ylim = c(0.6, 1)) +
   guides(colour = guide_legend(override.aes = list(alpha=1)))
 
 ggsave("output-5L/3-results/fig-07--kfold.png", height = 7, width = 6)
