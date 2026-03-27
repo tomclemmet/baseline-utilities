@@ -1,6 +1,6 @@
 eq5d5l <- function(mo, sc, ua, pd, ad) {
   value_set <- list(
-    mobility = c(0, 0.032, 0.058, 0.0179, 0.279),
+    mobility = c(0, 0.032, 0.058, 0.179, 0.279),
     selfcare = c(0, 0.038, 0.060, 0.162, 0.206),
     usualact = c(0, 0.049, 0.086, 0.184, 0.212),
     paindis = c(0, 0.056, 0.066, 0.371, 0.479),
