@@ -11,8 +11,7 @@ library(rms)
 library(ggpubr)
 theme_set(theme_bw())
 
-exclude <- c("Ones", "Mean", "Poly-6", "Poly-7", 
-              "Poly-8", "Poly-9", "Poly-10", "ALDVMM")
+exclude <- c("Ones", "Mean", "ALDVMM")
 capt <- "Source: HSE 2017-18, 10-fold cross-validation"
 lw <- 0.25
 al <- 0.5
@@ -94,9 +93,9 @@ etab.sex <- errs |>
     .groups = "drop"
   ) 
 
-# Figure 7: Visualisations for one fold -----------------------------------------
+# Figure 7: Visualisations  ---------------------------------------------------
 errs |> 
-  filter(Model != "Ones") |> 
+  filter(!Model %in% exclude) |> 
   group_by(Model, Fold, age, sex) |> 
   summarise(Predicted = mean(Predicted)) |> 
 
@@ -105,7 +104,7 @@ errs |>
   
   geom_line(aes(y = Predicted, colour = sex, group = Fold), alpha = 0.2) +
   
-  labs(y = "Predicted HSUV") +
+  labs(y = "Predicted utility") +
 
   theme(panel.grid.minor = element_blank(), legend.position = "bottom") +
   coord_cartesian(ylim = c(0.4, 1)) +
@@ -116,15 +115,12 @@ ggsave("output-5L/3-results/fig-07--kfold.png", height = 7, width = 6)
 
 # Figure 8: Overall RMSE plot ---------------------------------------------------
 etab.ovr |> 
-  mutate(RMSE.loss = RMSE - filter(etab.ovr, Model == "Linear")$RMSE) |> 
   filter(! Model %in% exclude) |> 
-  ggplot(aes(x = Model, y = RMSE.loss)) +
+  ggplot(aes(x = Model, y = RMSE)) +
   facet_grid(cols = vars(Type), scale = "free_x", space = "free") +
   geom_hline(yintercept = 0, linetype = 2) +
   
-  geom_line(aes(group = Type), 
-            colour = "#31446b", linewidth = lw, alpha = al) +
-  geom_point(colour = "#31446b") +
+  geom_col(aes(fill = Type)) +
   
   labs(
     caption = capt,
@@ -132,9 +128,10 @@ etab.ovr |>
   ) +
   theme(
     axis.text.x = element_text(angle = 270, vjust = 0.5, hjust = 0.1),
-    panel.grid.minor = element_blank(),
+    panel.grid= element_blank(),
     strip.text = element_blank()
-  )
+  ) +
+  coord_cartesian(ylim = c(0.1915, 0.192))
 
 ggsave("output-5L/3-results/fig-08--rmse.png", height = 4, width = 7)
 
@@ -260,111 +257,4 @@ etab.age |>
 
 ggsave("output-5L/3-results/fig-12--me.png", height = 5.5, width = 7)
 
-
-# Appendix C1: QALE Estimates ---------------------------------------------
-
-hse <- read_csv("data/hse-5L.csv", show_col_types = FALSE)
-lt <- read_csv("data/lifetables-1820.csv", show_col_types = FALSE, name_repair = tolower)
-
-# Half-cycle correction
-lt$s_hcc <- NA
-for (i in 1:84) {
-  lt$s_hcc[i] <- 0.5 * lt$survival[i] + 0.5 * lt$survival[i + 1]
-}
-for (i in 86:169) {
-  lt$s_hcc[i] <- 0.5 * lt$survival[i] + 0.5 * lt$survival[i + 1]
-}
-
-rcs7 <- lm(index ~ rcs(age, 7)*sex, data = hse)
-quad <- lm(index ~ poly(age, 2, raw = TRUE)*sex, data = hse)
-
-target <- as_tibble(expand.grid(age = c(16:100), sex = c("Male", "Female")))
-preds <- target |> 
-  mutate(
-    rcs7 = predict(rcs7, target),
-    quad = predict(quad, target)
-  )
-
-r <- 0.035
-qale <- preds |> 
-  full_join(lt, by = c("age", "sex")) |> 
-  filter(age != 100) |> 
-  mutate(
-    rcs7.q = mapply(\(x, y, z)
-                    sum(
-                      rcs7[age >= x & sex == y] *
-                        (s_hcc[age >= x & sex == y]/z) *
-                        1/((1+r)^(0:(99 - x)))
-                    ),
-                    age, sex, s_hcc
-    ),
-    quad.q = mapply(\(x, y, z)
-                    sum(
-                      quad[age >= x & sex == y] * 
-                        (s_hcc[age >= x & sex == y]/z) *
-                        1/((1+r)^(0:(99 - x)))
-                    ),
-                    age, sex, s_hcc
-    ),
-    .keep = "used"
-  ) |> 
-  select(-c(s_hcc, rcs7:quad)) |> 
-  mutate(diff = rcs7.q-quad.q) |> 
-  pivot_wider(names_from = sex, values_from = c(rcs7.q:diff))
-write_csv(qale, "output-5L/3-results/app-c1--qales.csv")
-
-
-# Figure 13: QALEs Illustration -----------------------------------------------
-ages <-  c(30, 50, 70, 90)
-s <-  "Female"
-r <- 0.035
-
-plots <- lapply(ages, function(a) {
-  preds |> 
-    full_join(lt, by = c("age", "sex")) |> 
-    filter(age != 100, sex == s, age >= a) |> 
-    mutate(
-      age = age,
-      Survival = s_hcc/s_hcc[age == a & sex == s],
-      uRCS = rcs7,
-      uQuad = quad,
-      Discount = 1/((1+r)^(0:(99 - a))),
-      RCS7 = Survival * uRCS * Discount,
-      Quad = Survival * uQuad * Discount,
-      .keep = "none"
-    ) |>
-    pivot_longer(c(Survival, Discount), names_to = "Variable", values_to = "Value") |> 
-    pivot_longer(uRCS:uQuad, names_to = "Model", values_to = "HSUV") |> 
-    
-    ggplot(aes(x = age)) +
-    geom_line(aes(y = Value, linetype = Variable)) +
-    geom_line(aes(y = HSUV, colour = Model)) +
-    
-    scale_colour_viridis_d(name = "", option = "E", begin = 0.2, end = 0.8,
-                           labels = c("Quadratic HSUV", "RCS-7 HSUV")) +
-    scale_linetype_manual(name = "", values = c(2, 3),
-                          labels = c("Discount Factor", "Survival Rate")) +
-    theme(
-      legend.position = "bottom",
-      panel.grid.minor = element_blank()
-    ) +
-    if (a != 30) {
-      theme(
-        axis.ticks.y = element_blank(),
-        axis.text.y = element_blank(),
-        axis.title.y = element_blank()
-      )
-    }
-})
-ggarrange(
-  plotlist = plots, 
-  labels = paste("age", ages),
-  hjust = c(-2.5, rep(-1.7, 3)),
-  vjust = 2.2,
-  font.label = list(size = 10),
-  common.legend = TRUE, 
-  nrow = 1,
-  widths = c(1.3, rep(1, 3)),
-  legend = "bottom"
-)
 
