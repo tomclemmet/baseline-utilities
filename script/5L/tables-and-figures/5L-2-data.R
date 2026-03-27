@@ -58,6 +58,21 @@ hse |>
   guides(colour = "none")
 ggsave("output-5L/2-data/fig-05--means.png", height = 4, width = 7)
 
+# Figure : Boxplots ---------------------------------------------
+ggplot(hse) +
+  geom_boxplot(aes(x = age16g5, y = index), outliers = FALSE) + 
+  # geom_bar(aes(x = age16g5, y = after_stat(count) / 3000))
+
+  
+  facet_grid(rows = vars(sex)) +
+  
+  coord_cartesian(ylim = c(0.25, 1)) +
+  theme(panel.grid.minor = element_blank()) +
+  labs(
+    caption = "Source: Pooled HSE Data 2017-2018"
+  ) 
+ggsave("output-5L/2-data/fig-05--means.png", height = 4, width = 7)
+
 # Figure 6: Std Devs by age Decile --------------------------------------------
 hse |> 
   group_by(sex, age = cut(age, quantile(age, seq(0, 1, 0.1)), 
