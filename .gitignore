@@ -15,3 +15,5 @@ renv/python/
 renv/staging/
 renv/local/
 renv/lock/
+
+temp*
