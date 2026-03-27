@@ -36,6 +36,26 @@ hse <- bind_rows(
       16 ~ mean(c(85, 89)),
       17 ~ 92.5 # Following approach of Hernandez Alava et al. (2022), using the average age for over 90s in the 2013 HSE
   ),
+  age16g5 = recode_values(
+    age16g5,
+    1 ~ "16-17",
+    2 ~ "18-19",
+    3 ~ "20-24",
+    4 ~ "25-29",
+    5 ~ "30-34",
+    6 ~ "35-39",
+    7 ~ "40-44",
+    8 ~ "45-49",
+    9 ~ "50-54",
+    10 ~ "55-59",
+    11 ~ "60-64",
+    12 ~ "65-69",
+    13 ~ "70-74",
+    14 ~ "75-79",
+    15 ~ "80-84",
+    16 ~ "85-89",
+    17 ~ "90+"
+  ),
   sex = recode_values(sex, 1 ~ "Male", 2 ~ "Female"),
   index = eq5d5l(mobil17, selfca17, usuala17, pain17, anxiet17)
 )
