@@ -100,25 +100,29 @@ hse |>
   )
 ggsave("output-5L/2-data/fig-06--variation.png", height = 5, width = 7)
 
-# (Unused) age plots for individual dimensions --------------------------------
+# Age plots for individual dimensions --------------------------------
 hse |> 
   mutate(across(mobil17:anxiet17, as.factor)) |> 
-  pivot_longer(mobil17:anxiet17, names_to = "Dimension", values_to = "Score") |> 
+  rename(Mobility = mobil17, `Self care` = selfca17, `Usual activities` = usuala17, 
+         `Pain & discomfort` = pain17, `Anxiety & depression` = anxiet17) |> 
+  pivot_longer(Mobility:`Anxiety & depression`, names_to = "Dimension", values_to = "Score") |> 
+  mutate(Dimension = factor(Dimension, levels = c("Mobility", "Self care", "Usual activities", "Pain & discomfort", "Anxiety & depression"))) |> 
   
   ggplot(aes(x = age16g5)) +
-  facet_grid(rows = vars(Dimension), cols = vars(sex)) +
+  facet_grid(rows = vars(Dimension)) +
   
   geom_bar(aes(fill = Score), position = position_fill(reverse = TRUE)) +
   
   theme(legend.position="bottom",
         panel.grid=element_blank(),
         axis.text.x = element_text(angle = 270, vjust = 0.5, hjust = 0.1)) +
-  scale_y_continuous(labels = scales::percent_format(), breaks = c(0, 0.5, 1)) +
+  scale_y_continuous(labels = scales::percent_format(), breaks = c(0,1)) +
   scale_fill_viridis_d(
     option = "inferno", begin = 0.3, end = 0.9,
-    labels=c("No Problems", "Mild Problems", "Some Problems", "Moderate Problems", "Extreme Problems")
+    labels=c("No Problems", "Slight Problems", "Moderate Problems", "Severe Problems", "Extreme Problems")
   ) +
-  labs(x = "Age band", y = "Proportion")
+  labs(x = "Age band", y = "Proportion") +
+  guides(fill = guide_legend(nrow = 2, byrow = TRUE))
 ggsave("output-5L/2-data/fig-07--dimensions.png", height = 8, width = 5)
 
 # Summary table
