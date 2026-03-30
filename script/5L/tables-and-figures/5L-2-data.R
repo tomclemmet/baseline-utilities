@@ -107,21 +107,38 @@ hse |>
          `Pain & discomfort` = pain17, `Anxiety & depression` = anxiet17) |> 
   pivot_longer(Mobility:`Anxiety & depression`, names_to = "Dimension", values_to = "Score") |> 
   mutate(Dimension = factor(Dimension, levels = c("Mobility", "Self care", "Usual activities", "Pain & discomfort", "Anxiety & depression"))) |> 
+  count(Dimension, age16g5, Score) |> 
+  mutate(
+    .by = c("Dimension", "age16g5"),
+    prop = n / sum(n)
+  ) |> 
+  filter(Score != 1) |> 
   
-  ggplot(aes(x = age16g5)) +
-  facet_grid(rows = vars(Dimension)) +
+  ggplot(aes(x = age16g5, y = prop)) +
+  facet_grid(rows = vars(Dimension)) + 
   
-  geom_bar(aes(fill = Score), position = position_fill(reverse = TRUE)) +
+  geom_col(aes(fill = Score), position = position_stack(reverse = TRUE)) +
+  
+  geom_text(
+    data = function(df) unique(df["Dimension"]), 
+    aes(label = Dimension, x = -Inf, y = Inf), 
+    hjust = -0.1, vjust = 1.5, # Fine-tune these to nudge text away from the absolute edges
+    fontface = "bold", size = 4,
+    inherit.aes = FALSE
+  ) +
   
   theme(legend.position="bottom",
         panel.grid=element_blank(),
-        axis.text.x = element_text(angle = 270, vjust = 0.5, hjust = 0.1)) +
-  scale_y_continuous(labels = scales::percent_format(), breaks = c(0,1)) +
+        axis.text.x = element_text(angle = 270, vjust = 0.5, hjust = 0.1),
+        strip.background = element_blank(),
+        strip.text = element_blank()) + 
+  
+  scale_y_continuous(labels = scales::percent_format(), breaks = c(0, 0.5)) +
   scale_fill_viridis_d(
-    option = "inferno", begin = 0.3, end = 0.9,
-    labels=c("No Problems", "Slight Problems", "Moderate Problems", "Severe Problems", "Extreme Problems")
+    option = "magma", begin = 0.1, end = 0.9, direction = -1,
+    labels=c("Slight Problems", "Moderate Problems", "Severe Problems", "Extreme Problems")
   ) +
-  labs(x = "Age band", y = "Proportion") +
+  labs(x = "Age band", y = "Proportion reporting problems") +
   guides(fill = guide_legend(nrow = 2, byrow = TRUE))
 ggsave("output-5L/2-data/fig-07--dimensions.png", height = 8, width = 5)
 
