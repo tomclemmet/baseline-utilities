@@ -1,6 +1,7 @@
 *.csv
 *.tab
 *.rtf
+*.xlsx
 
 *.png
 *.html
