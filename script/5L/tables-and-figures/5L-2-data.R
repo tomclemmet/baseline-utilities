@@ -103,10 +103,10 @@ ggsave("output-5L/2-data/fig-06--variation.png", height = 5, width = 7)
 # Age plots for individual dimensions --------------------------------
 hse |> 
   mutate(across(mobil17:anxiet17, as.factor)) |> 
-  rename(Mobility = mobil17, `Self care` = selfca17, `Usual activities` = usuala17, 
+  rename(Mobility = mobil17, `Self-care` = selfca17, `Usual activities` = usuala17, 
          `Pain & discomfort` = pain17, `Anxiety & depression` = anxiet17) |> 
   pivot_longer(Mobility:`Anxiety & depression`, names_to = "Dimension", values_to = "Score") |> 
-  mutate(Dimension = factor(Dimension, levels = c("Mobility", "Self care", "Usual activities", "Pain & discomfort", "Anxiety & depression"))) |> 
+  mutate(Dimension = factor(Dimension, levels = c("Mobility", "Self-care", "Usual activities", "Pain & discomfort", "Anxiety & depression"))) |> 
   count(Dimension, age16g5, Score) |> 
   mutate(
     .by = c("Dimension", "age16g5"),
@@ -120,9 +120,9 @@ hse |>
   geom_col(aes(fill = Score), position = position_stack(reverse = TRUE)) +
   
   geom_text(
-    data = function(df) unique(df["Dimension"]), 
-    aes(label = Dimension, x = -Inf, y = Inf), 
-    hjust = -0.1, vjust = 1.5, # Fine-tune these to nudge text away from the absolute edges
+    data = function(df) distinct(df, Dimension), 
+    aes(label = Dimension, x = 0.6, y = Inf), 
+    hjust = 0, vjust = 1.5, # Fine-tune these to nudge text away from the absolute edges
     fontface = "bold", size = 4,
     inherit.aes = FALSE
   ) +
@@ -136,7 +136,8 @@ hse |>
   scale_y_continuous(labels = scales::percent_format(), breaks = c(0, 0.5)) +
   scale_fill_viridis_d(
     option = "magma", begin = 0.1, end = 0.9, direction = -1,
-    labels=c("Slight Problems", "Moderate Problems", "Severe Problems", "Extreme Problems")
+    labels=c("Slight Problems", "Moderate Problems", "Severe Problems", "Extreme Problems"),
+    name = ""
   ) +
   labs(x = "Age band", y = "Proportion reporting problems") +
   guides(fill = guide_legend(nrow = 2, byrow = TRUE))
@@ -180,3 +181,13 @@ tot <- hse |>
   )
 
 write.csv(bind_rows(tot, by_yr), "output-5L/2-data/characeristics.csv")
+
+
+temp |> 
+  filter(Score != 1) |> 
+  summarise(
+    .by = c(age16g5, Dimension),
+    problems = sum(prop)
+  ) |> 
+  group_by(age16g5) |> 
+  slice_min(problems)

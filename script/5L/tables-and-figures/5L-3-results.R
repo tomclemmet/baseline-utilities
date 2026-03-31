@@ -57,11 +57,15 @@ write_csv(etab.ovr, "output-5L/3-results/app-b1--errors.csv")
 
 # Appendix B2: age-stratified Error Statistics --------------------------------
 etab.age <- errs |> 
-  group_by(agedec = cut(
-    age, quantile(age, seq(0, 1, 0.1)), 
-    include.lowest = TRUE
-  ), 
-  Type, Model, Fold
+  group_by(
+    agedec = cut(
+      age, 
+      breaks = c(0, 30, 50, 70, Inf), 
+      labels = c("Age under 30 (n = 2,078)", "Age 30 to 49 (n = 4,692)", "Age 50 to 69 (n = 4,897)", "Age 70 and over (n = 2,746)"),
+      right = FALSE,
+      include.lowest = TRUE
+    ), 
+    Type, Model, Fold
   ) |> 
   summarise(
     ME = mean(Error),
@@ -76,6 +80,11 @@ etab.age <- errs |>
     .groups = "drop"
   )
 write_csv(etab.age, "output-5L/3-results/app-b2--errors.csv")
+
+etab.age |> 
+  mutate(.by = agedec, diff = RMSE - min(RMSE)) |> 
+  summarise(.by = Model, diff = sum(diff)) |> 
+  arrange(diff)
 
 # (Unused) sex-stratified Error Statistics ------------------------------------
 etab.sex <- errs |> 
@@ -106,7 +115,7 @@ errs |>
   
   labs(y = "Predicted utility") +
 
-  theme(panel.grid.minor = element_blank(), legend.position = "bottom") +
+  theme(panel.grid = element_blank(), legend.position = "bottom") +
   coord_cartesian(ylim = c(0.6, 1)) +
   guides(colour = guide_legend(override.aes = list(alpha=1)))
 
@@ -117,144 +126,116 @@ ggsave("output-5L/3-results/fig-07--kfold.png", height = 7, width = 6)
 etab.ovr |> 
   filter(! Model %in% exclude) |> 
   ggplot(aes(x = Model, y = RMSE)) +
-  facet_grid(cols = vars(Type), scale = "free_x", space = "free") +
-  geom_hline(yintercept = 0, linetype = 2) +
+  #facet_grid(cols = vars(Type), scale = "free", space = "free") +
+
+  geom_point(aes(colour = Type), size = 2, show.legend = FALSE) +
   
-  geom_col(aes(fill = Type)) +
-  
-  labs(
-    caption = capt,
-    y = "Difference in RMSE"
-  ) +
+  labs(y = "Root mean square error") +
   theme(
     axis.text.x = element_text(angle = 270, vjust = 0.5, hjust = 0.1),
     panel.grid= element_blank(),
     strip.text = element_blank()
   ) +
-  coord_cartesian(ylim = c(0.21175, 0.21225))
+  scale_colour_viridis_d(option = "plasma", begin = 0.2, end = 0.8)
 
 ggsave("output-5L/3-results/fig-08--rmse.png", height = 4, width = 7)
 
 # Figure 9: RMSE plot by age ---------------------------------------------------
+y_span <- 0.001
+scales_anchors_rmse <- etab.age |>
+  filter(! Model %in% c("Ones", "Mean", "ALDVMM1")) |> 
+  group_by(agedec) |>
+  summarise(
+    centre = mean(RMSE, na.rm = TRUE),
+    ymin = round(centre - (y_span / 2), 4),
+    ymax = round(centre + (y_span / 2), 4)
+  ) |>
+  pivot_longer(cols = c(ymin, ymax), names_to = "limit", values_to = "RMSE")
+
 etab.age |> 
-  filter(Model == "Linear") |> 
-    right_join(etab.age, by = "agedec") |> 
-    group_by(agedec, Type = Type.y, Model = Model.y) |> 
-    summarise(
-      ME.diff = ME.y - ME.x,
-      RMSE.loss = RMSE.y - RMSE.x,
-      MAE.loss = MAE.y - MAE.x,
-      .groups = "drop"
-    ) |> 
-  filter(! Model %in% exclude) |> 
+  filter(! Model %in% c("Ones", "Mean", "ALDVMM1")) |> 
+  ggplot(aes(x = Model, y = RMSE)) +
+  facet_wrap(vars(agedec), scales = "free") +
   
-  ggplot(aes(x = Model, y = RMSE.loss)) +
-  facet_grid(cols = vars(Type), scale = "free_x", space = "free") +
-  geom_hline(yintercept = 0, linetype = 2) +
+  geom_point(aes(colour = Type), show.legend = FALSE) +
+  geom_blank(aes(y = RMSE), inherit.aes = FALSE, data = scales_anchors_rmse) +
   
-  geom_line(aes(group = agedec, colour = agedec), linewidth = lw, alpha = al) +
-  geom_point(aes(colour = agedec, shape = agedec), alpha = 0.8) +
-  
-  labs(
-    y = "Difference in RMSE",
-    caption = capt,
-    colour = "age Decile", 
-    shape = "age Decile"
-  ) +
-  scale_colour_viridis_d(option = "E", begin = 0.1, end = 0.9) +
-  scale_shape_manual(values = c(17, 18, rep(15:18, 2))) +
+  scale_y_continuous(breaks = seq(0, 0.5, 0.0002)) +
+  labs(y = "Root mean square error") +
   theme(
     axis.text.x = element_text(angle = 270, vjust = 0.5, hjust = 0.1),
-    panel.grid.minor = element_blank(),
-    legend.position = "bottom",
-    strip.text = element_blank()
-  )
-
+    panel.grid = element_blank(),
+    legend.position = "bottom"
+  ) +
+  scale_colour_viridis_d(option = "plasma", begin = 0.2, end = 0.8)
 ggsave("output-5L/3-results/fig-09--rmse.png", height = 5, width = 7)
 
-# Figure 10: Ones vs linear error distributions (relevant for MAEs) -------------
-errs |> 
-  filter(Model %in% c("Ones", "Linear")) |> 
-  group_by(Model) |> 
-  ggplot() +
-  geom_vline(xintercept = 0, linetype = 2) +
-  
-  geom_density(aes(x = Error, fill = Model), alpha = 0.5, linewidth = 0) +
-  
-  labs(
-    y = "Density",
-    caption = "Source: Pooled HSE 2017-18, 10-fold cross-validation"
-  ) +
-  coord_cartesian(xlim = c(-1.239, 0.3)) +
-  theme(panel.grid.minor = element_blank()) +
-  scale_fill_viridis_d(option = "E", begin = 0.2, end = 0.8)
-
-ggsave("output-5L/3-results/fig-10--errors.png", width = 7, height = 4)
-
 # Figure 11: Overall ME plot ----------------------------------------------------
-etab.sex |> 
-  select(-c(RMSE, MAE)) |> 
-  rename(ME_bysex = ME) |> 
-  full_join(select(etab.ovr, -c(RMSE, MAE))) |> 
-  filter(! Model %in% c(exclude, "ALDVMM")) |> 
-  mutate(
-    Type = if_else(Type == "Linear", "Polynomial", Type),
-    lab1 = "Overall"
-  ) |> 
+etab.ovr |> 
+  filter(! Model %in% c(exclude, "ALDVMM1", "ALDVMM2")) |> 
   
   ggplot(aes(x = Model)) +
-  facet_grid(cols = vars(Type), scale = "free_x", space = "free") +
   geom_hline(yintercept = 0, linetype = 2) +
   
-  geom_line(
-    aes(y = ME_bysex, colour = sex, group = sex), 
-    linewidth = lw, alpha = al
-  ) +
-  geom_point(aes(y = ME_bysex, colour = sex), alpha = al, size = 0.5) +
-    
-  geom_line(
-    aes(y = ME, group = Type, linetype = lab1), 
-    linewidth = lw, colour = "#31446b"
-  ) +
-  geom_point(aes(y = ME, shape = lab1), colour = "#31446b") +
+  geom_point(aes(y = ME, colour = Type), show.legend = FALSE) +
   
-  labs(
-    caption = capt, linetype = "", shape = ""
-  ) +   
+  labs(y = "Mean error") +
   theme(
     axis.text.x = element_text(angle = 270, vjust = 0.5, hjust = 0.1),
-    panel.grid.minor = element_blank(),
-    strip.text = element_blank()
+    panel.grid = element_blank()
   ) +
-  guides(colour = guide_legend(override.aes = list(alpha = 1))) 
+  scale_colour_viridis_d(option = "plasma", begin = 0.2, end = 0.8)
+
 ggsave("output-5L/3-results/fig-11--me.png", height = 4, width = 7)
 
 # Figure 12: ME plot by age -----------------------------------------------------
+y_span <- 0.001
+scales_anchors_me <- etab.age |>
+  filter(! Model %in% c("Ones", "Mean", "ALDVMM1")) |> 
+  group_by(agedec) |>
+  summarise(
+    centre = mean(ME, na.rm = TRUE),
+    ymin = round(centre - (y_span / 2), 4),
+    ymax = round(centre + (y_span / 2), 4)
+  ) |>
+  pivot_longer(cols = c(ymin, ymax), names_to = "limit", values_to = "RMSE")
+
 etab.age |> 
-  filter(! Model %in% c(exclude, "ALDVMM")) |> 
-  mutate(Type = case_match(Type, "Linear" ~ "Polynomial", .default = Type)) |> 
+  filter(! Model %in% c("Ones", "Mean", "ALDVMM1")) |> 
   ggplot(aes(x = Model, y = ME)) +
-  facet_grid(cols = vars(Type), scale = "free_x", space = "free") +
-  geom_hline(yintercept = 0, linetype = 2) +
+  facet_wrap(vars(agedec), scales = "free") +
   
-  geom_line(aes(group = agedec, colour = agedec), linewidth = lw, alpha = al) +
-  geom_point(aes(colour = agedec, shape = agedec)) +
+  geom_hline(yintercept = 0, linetype = 2, alpha = 0.5) +
+  geom_point(aes(colour = Type), show.legend = FALSE) +
+  geom_blank(aes(y = RMSE), inherit.aes = FALSE, data = scales_anchors_me) +
   
-  
-  labs(
-    caption = "Source: Pooled HSE 2017-18, 10-fold cross-validation",
-    colour = "age Decile",
-    shape = "age Decile"
-  ) +
+  scale_y_continuous(breaks = seq(-0.1, 0.1, 0.0025)) +
+  labs(y = "Mean error") +
   theme(
     axis.text.x = element_text(angle = 270, vjust = 0.5, hjust = 0.1),
-    panel.grid.minor = element_blank(),
-    strip.text = element_blank(),
+    panel.grid = element_blank(),
     legend.position = "bottom"
   ) +
-  scale_colour_viridis_d(option = "E", begin = 0.1, end = 0.9) +
-  scale_shape_manual(values = c(17, 18, rep(15:18, 2)))
+  scale_colour_viridis_d(option = "plasma", begin = 0.2, end = 0.8)
+ggsave("output-5L/3-results/fig-12--me-age.png", height = 5, width = 7)
 
-ggsave("output-5L/3-results/fig-12--me.png", height = 5.5, width = 7)
+## RCS-5
+library(rms)
+library(broom)
+ages <- data.frame(age = seq(16, 100, 1))
+
+male <- hse |> 
+  filter(sex == "Male") |> 
+  lm(index ~ rcs(age, 5), data = _) |> 
+  augment(newdata = ages, interval = "confidence")
+
+female <- hse |> 
+  filter(sex == "Female") |> 
+  lm(index ~ rcs(age, 5), data = _) |> 
+  augment(newdata = ages, interval = "confidence")
+
+
+bind_rows(list(male = male, female = female), .id = "sex") |> 
+  write.csv("output-5L/3-results/RCS-5-predictions.csv")
 
 
