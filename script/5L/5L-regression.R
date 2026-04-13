@@ -1,3 +1,7 @@
+# This files fits ordered multinomial logistic models to each of the EQ-5D
+# dimensions and uses the predictions to generate baseline utilities
+# (work in progress)
+
 library(dplyr)
 library(readr)
 library(ggplot2)
