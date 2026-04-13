@@ -45,7 +45,7 @@ etab.ovr <- errs |>
     MAE = mean(MAE),
     .groups = "drop"
   )
-write_csv(etab.ovr, "output-5L/app-b1--errors.csv")
+write.csv(etab.ovr, "output-5L/app-b1--errors.csv")
 
 # Age-stratified Error Statistics ---------------------------------------------
 etab.age <- errs |> 
@@ -71,7 +71,7 @@ etab.age <- errs |>
     MAE = mean(MAE),
     .groups = "drop"
   )
-write_csv(etab.age, "output-5L/app-b2--errors.csv")
+write.csv(etab.age, "output-5L/app-b2--errors.csv")
 
 # Visualisations  -------------------------------------------------------------
 errs |> 
