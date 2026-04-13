@@ -18,7 +18,7 @@ mod.ord <- c(
   "RCS-10", "RCS-11", "RCS-12"
 )
 
-errs <- read_csv("output-5L/3-results/kfold-results.csv", show_col_types = FALSE) |> 
+errs <- read_csv("output-5L/kfold-results.csv", show_col_types = FALSE) |> 
   mutate(
     Model = factor(Model, levels = mod.ord),
     Type = factor(case_when(
@@ -45,7 +45,7 @@ etab.ovr <- errs |>
     MAE = mean(MAE),
     .groups = "drop"
   )
-write_csv(etab.ovr, "output-5L/3-results/app-b1--errors.csv")
+write_csv(etab.ovr, "output-5L/app-b1--errors.csv")
 
 # Age-stratified Error Statistics ---------------------------------------------
 etab.age <- errs |> 
@@ -71,7 +71,7 @@ etab.age <- errs |>
     MAE = mean(MAE),
     .groups = "drop"
   )
-write_csv(etab.age, "output-5L/3-results/app-b2--errors.csv")
+write_csv(etab.age, "output-5L/app-b2--errors.csv")
 
 # Visualisations  -------------------------------------------------------------
 errs |> 
@@ -89,7 +89,7 @@ errs |>
   coord_cartesian(ylim = c(0.6, 1)) +
   guides(colour = guide_legend(override.aes = list(alpha=1)))
 
-ggsave("output-5L/3-results/fig-07--kfold.png", height = 7, width = 6)
+ggsave("output-5L/fig-07--kfold.png", height = 7, width = 6)
 
 
 # Overall RMSE plot -----------------------------------------------------------
@@ -107,7 +107,7 @@ etab.ovr |>
   ) +
   scale_colour_viridis_d(option = "plasma", begin = 0.2, end = 0.8)
 
-ggsave("output-5L/3-results/fig-08--rmse.png", height = 4, width = 7)
+ggsave("output-5L/fig-08--rmse.png", height = 4, width = 7)
 
 # RMSE plot by age ------------------------------------------------------------
 y_span <- 0.001
@@ -137,7 +137,7 @@ etab.age |>
     legend.position = "bottom"
   ) +
   scale_colour_viridis_d(option = "plasma", begin = 0.2, end = 0.8)
-ggsave("output-5L/3-results/fig-09--rmse.png", height = 5, width = 7)
+ggsave("output-5L/fig-09--rmse.png", height = 5, width = 7)
 
 # Mean error plot -------------------------------------------------------------
 etab.ovr |> 
@@ -154,7 +154,7 @@ etab.ovr |>
   ) +
   scale_colour_viridis_d(option = "plasma", begin = 0.2, end = 0.8)
 
-ggsave("output-5L/3-results/fig-11--me.png", height = 4, width = 7)
+ggsave("output-5L/fig-11--me.png", height = 4, width = 7)
 
 # Mean error by age -----------------------------------------------------------
 y_span <- 0.001
@@ -185,7 +185,7 @@ etab.age |>
     legend.position = "bottom"
   ) +
   scale_colour_viridis_d(option = "plasma", begin = 0.2, end = 0.8)
-ggsave("output-5L/3-results/fig-12--me-age.png", height = 5, width = 7)
+ggsave("output-5L/fig-12--me-age.png", height = 5, width = 7)
 
 # RCS-5 -----------------------------------------------------------------------
 ages <- data.frame(age = seq(16, 100, 1))
@@ -201,4 +201,4 @@ female <- hse |>
   augment(newdata = ages, interval = "confidence")
 
 bind_rows(list(male = male, female = female), .id = "sex") |> 
-  write.csv("output-5L/3-results/RCS-5-predictions.csv")
+  write.csv("output-5L/RCS-5-predictions.csv")

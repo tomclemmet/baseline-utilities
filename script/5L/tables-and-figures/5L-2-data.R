@@ -11,6 +11,7 @@ library(ggplot2)
 theme_set(theme_bw())
 
 hse <- read_csv("data/hse-5L.csv", show_col_types = FALSE)
+if (!dir.exists("output")) {dir.create("output")}
 
 # Figure 4: age and HSUV Distributions ----------------------------------------
 hse |> 
@@ -30,7 +31,7 @@ hse |>
     caption = "Source: Pooled HSE Data 2017-2018",
     y = "Density"
   )
-ggsave("output-5L/2-data/fig-04--distributions.png", height = 4, width = 7)
+ggsave("output-5L/fig-04--distributions.png", height = 4, width = 7)
 
 # Figure 5: Overall Means and CIs ---------------------------------------------
 hse |>
@@ -56,7 +57,7 @@ hse |>
     caption = "Source: Pooled HSE Data 2017-2018"
   ) +
   guides(colour = "none")
-ggsave("output-5L/2-data/fig-05--means.png", height = 4, width = 7)
+ggsave("output-5L/fig-05--means.png", height = 4, width = 7)
 
 # Figure : Boxplots ---------------------------------------------
 ggplot(hse) +
@@ -71,7 +72,7 @@ ggplot(hse) +
   labs(
     caption = "Source: Pooled HSE Data 2017-2018"
   ) 
-ggsave("output-5L/2-data/fig-04a--boxplots.png", height = 4, width = 7)
+ggsave("output-5L/fig-04a--boxplots.png", height = 4, width = 7)
 
 # Figure 6: Std Devs by age Decile --------------------------------------------
 hse |> 
@@ -98,7 +99,7 @@ hse |>
     panel.grid.minor = element_blank(),
     legend.position = "bottom"
   )
-ggsave("output-5L/2-data/fig-06--variation.png", height = 5, width = 7)
+ggsave("output-5L/fig-06--variation.png", height = 5, width = 7)
 
 # Age plots for individual dimensions --------------------------------
 hse |> 
@@ -141,7 +142,7 @@ hse |>
   ) +
   labs(x = "Age band", y = "Proportion reporting problems") +
   guides(fill = guide_legend(nrow = 2, byrow = TRUE))
-ggsave("output-5L/2-data/fig-07--dimensions.png", height = 8, width = 5)
+ggsave("output-5L/fig-07--dimensions.png", height = 8, width = 5)
 
 # Summary table
 by_yr <- hse |> 
@@ -180,4 +181,4 @@ tot <- hse |>
     utility_sd = sd(index)
   )
 
-write.csv(bind_rows(tot, by_yr), "output-5L/2-data/characeristics.csv")
+write.csv(bind_rows(tot, by_yr), "output-5L/characeristics.csv")

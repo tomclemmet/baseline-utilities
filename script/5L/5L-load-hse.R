@@ -60,4 +60,5 @@ hse <- bind_rows(
   index = eq5d5l(mobil17, selfca17, usuala17, pain17, anxiet17)
 )
 
+if (!dir.exists("data")) {dir.create("data")}
 write_csv(hse, "data/hse-5L.csv")
