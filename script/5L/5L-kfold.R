@@ -127,7 +127,7 @@ for (s in c("Male", "Female")) {
   }
 }
 
-write.csv(results$errors, "output-5L/3-results/kfold-results.csv")
-sink("output-5L/3-results/models.txt")
+write.csv(results$errors, "output-5L/kfold-results.csv")
+sink("output-5L/models.txt")
 results$models
 sink(NULL)
