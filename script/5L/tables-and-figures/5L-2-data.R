@@ -181,13 +181,3 @@ tot <- hse |>
   )
 
 write.csv(bind_rows(tot, by_yr), "output-5L/2-data/characeristics.csv")
-
-
-temp |> 
-  filter(Score != 1) |> 
-  summarise(
-    .by = c(age16g5, Dimension),
-    problems = sum(prop)
-  ) |> 
-  group_by(age16g5) |> 
-  slice_min(problems)
