@@ -18,19 +18,22 @@ library(rms)
 library(aldvmm)
 
 
-hse <- read_csv("Data/hse-5L.csv", show_col_types = FALSE)
+hse <- read_csv("Data/hse-5L.csv", show_col_types = FALSE) |> 
+  mutate(
+    agegrp = cut(
+      age, 
+      breaks = c(0, 30, 50, 70, Inf), 
+      labels = c("Age under 30 (n = 2,078)", "Age 30 to 49 (n = 4,692)", "Age 50 to 69 (n = 4,897)", "Age 70 and over (n = 2,746)"),
+      right = FALSE,
+      include.lowest = TRUE
+    )
+  )
 
 theme_set(theme_bw())
 set.seed(64813465)
-aldvmm.coefs <- c(
-  1, -0.01, -0.001, 1, -0.01, -0.001, 1, -0.01, -0.001,
-  0, 0, 0, 0, -2, -2, -2
-)
 
 # Defining the list of models to test -----------------------------------------
 models <- list(
-  Ones = \(x) NULL,
-  Mean = \(x) lm(index ~ 1, data = x),
   Linear = \(x) lm(index ~ age, data = x),
   Quadratic = \(x) lm(index ~ poly(age, 2, raw = TRUE), data = x),
   `Poly-3` = \(x) lm(index ~ poly(age, 3, raw = TRUE), data = x),
@@ -41,10 +44,10 @@ models <- list(
   `Poly-8` = \(x) lm(index ~ poly(age, 8, raw = TRUE), data = x),
   `Poly-9` = \(x) lm(index ~ poly(age, 9, raw = TRUE), data = x),
   `Poly-10` = \(x) lm(index ~ poly(age, 10, raw = TRUE), data = x),
-  ALDVMM1 = \(x) aldvmm(index ~ I(age/10) + I((age/10)^2) | I(age/10), data = x,
-                       psi = c(0.968, -0.567), ncmp = 1),
-  ALDVMM2 = \(x) aldvmm(index ~ I(age/10) + I((age/10)^2) | I(age/10), data = x,
-                       psi = c(0.968, -0.567), ncmp = 2),
+  `ALDVMM-1` = \(x) suppressMessages(aldvmm(index ~ I(age/10) + I((age/10)^2) | I(age/10), data = x,
+                       psi = c(0.968, -0.567), ncmp = 1, optim.method = "Rvmmin")),
+  `ALDVMM-2` = \(x) aldvmm(index ~ I(age/10) + I((age/10)^2) | I(age/10), data = x,
+                       psi = c(0.968, -0.567), ncmp = 2, optim.method = "Rvmmin"),
   `RCS-3` = \(x) lm(index ~ rcs(age, 3), data = x),
   `RCS-4` = \(x) lm(index ~ rcs(age, 4), data = x),
   `RCS-5` = \(x) lm(index ~ rcs(age, 5), data = x),
@@ -69,12 +72,11 @@ for (s in c("Male", "Female")) {
   results$folds[[s]] <- vfold_cv(
     filter(hse, sex == s), 
     v = k, 
-    strata = age, 
-    breaks = 10
+    strata = agegrp
   )
   
   for (label in names(models)) {
-    lapply(
+    r <- lapply(
       results$folds[[s]]$splits,
       function (x) {
         train <- analysis(x)
@@ -82,13 +84,10 @@ for (s in c("Male", "Female")) {
         
         model <- models[[label]](train)
         
-        if (label == "ALDVMM1" | label == "ALDVMM2") {
+        if (substr(label, 1, 6) == "ALDVMM") {
           message(paste("\nALDVMM fitted, AIC =", model$gof$aic))
           train$Predicted <- model$pred$yhat
-        } else if (label == "Ones") {
-          train$Predicted <-  1
-        }
-        else {
+        } else {
           train$Predicted <- predict(model, train)
         }
         
@@ -105,7 +104,7 @@ for (s in c("Male", "Female")) {
           mod = summary(model)
         )
       }
-    ) -> r
+    )
 
     for (i in 1:k) {
       results$errors <- results$errors |> 
