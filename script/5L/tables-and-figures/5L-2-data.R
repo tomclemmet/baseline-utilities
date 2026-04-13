@@ -11,7 +11,7 @@ library(ggplot2)
 theme_set(theme_bw())
 
 hse <- read_csv("data/hse-5L.csv", show_col_types = FALSE)
-if (!dir.exists("output")) {dir.create("output")}
+if (!dir.exists("output-5L")) {dir.create("output-5L")}
 
 # Figure 4: age and HSUV Distributions ----------------------------------------
 hse |> 
