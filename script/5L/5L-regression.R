@@ -38,10 +38,11 @@ models <- list(
   f_ad = polr(anxiet17 ~ I(age/10) + I((age/10)^2) + I((age/10)^3), data = female)
 )
 
-decs <- data.frame(age = seq(16, 100))
+ages <- data.frame(age = seq(16, 100))
+decs <- data.frame(age = ages)
 
 for (i in 1:5) {
-  decs[names(models)[i]] <- predict(models[[i]], newdata = ages, type = "probs") %*% value_set[[i]]
+  decs[names(models)[i]] <- predict(models[[i]], newdata = decs, type = "probs") %*% value_set[[i]]
   decs[names(models)[i + 5]] <- predict(models[[i + 5]], newdata = ages, type = "probs") %*% value_set[[i]]
 }
 
