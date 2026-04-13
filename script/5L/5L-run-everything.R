@@ -1,7 +1,6 @@
 rm(list = ls())
 
 files <- c(
-  "script/5L/tables-and-figures/5L-1-literature.R",
   "script/5L/5L-load-hse.R",
   "script/5L/tables-and-figures/5L-2-data.R",
   "script/5L/5L-kfold.R",
