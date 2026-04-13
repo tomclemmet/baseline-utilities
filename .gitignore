@@ -1,6 +1,7 @@
 *.csv
 *.tab
 *.rtf
+*.xlsx
 
 *.png
 *.html
@@ -15,3 +16,5 @@ renv/python/
 renv/staging/
 renv/local/
 renv/lock/
+
+temp*
