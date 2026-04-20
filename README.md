@@ -1,3 +1,9 @@
 # Baseline Utilities
 
-Code repository for the study "Validating Methods for Estimating Age and Sex Adjusted Baseline Utilities". \## Abstract Age- and sex-adjusted HSUV baselines are sometimes required for HTA submissions, especially since NICE’s 2022 introduction of absolute/proportional QALY shortfalls to determine severity modifiers. Research on estimating these baselines has been sparse and has not considered a broad range of models. I implement a stratified k-fold cross-validation procedure to test the performance of a selection of baseline utility models: an ALDVMM, a range of polynomial models and a range of RCS models. My results fail to support the DSU’s recommendation of the ALDVMM. Polynomial models are useful but higher-order versions produce counterintuitive predictions for older people. RCS models avoid this problem, with the optimal number of knots (i.e. model flexibility) being around 7. However, the differences in models’ baselines seem unlikely to be decisive in economic evaluations, and there are significant difficulties in estimating HSUVs for older people which further research ought to thoroughly investigate.
+Code repository for the study "Validating Methods for Estimating Age and Sex Adjusted Baseline Utilities", a study analysing the relationship between age, sex, and EQ-5D utilities in the UK general population.
+
+Raw data from the Health Survey for England is available here: https://datacatalogue.ukdataservice.ac.uk/series/series/2000021.
+
+To replicate the EQ-5D-5L results, clone or download the repository, save the raw data from the 2017 and 2018 Health Survey for England into a folder called `raw-data/`, open `baseline-utilities.Rproj`, and run `script/5L/run-everything.R`. The results will populate in a new `output` folder.
+
+Scripts for an analysis of EQ-5D-3L data are also available in the `script/3L/` folder, or as a separate release to download.
