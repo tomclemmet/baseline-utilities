@@ -15,3 +15,7 @@ for (name in files) {
 }
 
 rm(list = ls())
+
+sink("session-info.txt")
+sessionInfo()
+sink()
